@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D3.js Heatmap with Popover (Week View)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .day {
+            stroke: #ccc;
+            stroke-width: 1px;
+        }
+        .popover {
+            position: absolute;
+            background-color: white;
+            border: 1px solid black;
+            padding: 10px;
+            display: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="popover" class="popover"></div>
+
+    <script>
+        // Heatmap settings
+        const width = 800;
+        const height = 200;
+        const cellSize = 15; // Size of each square
+        const year = new Date().getFullYear();
+        const currentDayOfYear = Math.floor((new Date() - new Date(year, 0, 0)) / 1000 / 60 / 60 / 24);
+
+        // Create an SVG container
+        const svg = d3.select("body")
+                      .append("svg")
+                      .attr("width", width)
+                      .attr("height", height);
+
+        // Create a popover element (hidden initially)
+        const popover = d3.select("#popover");
+
+        // Generate a list of days in the year (365 or 366 for leap years)
+        const daysInYear = isLeapYear(year) ? 366 : 365;
+        const days = Array.from({length: daysInYear}, (_, i) => i + 1);
+
+        // Function to get the starting weekday of a year (0 = Sunday, 6 = Saturday)
+        const startOfYear = new Date(year, 0, 1).getDay();
+
+        // Create a heatmap: calculate position for each square, arranged by weeks
+        svg.selectAll(".day")
+           .data(days)
+           .enter()
+           .append("rect")
+           .attr("class", "day")
+           .attr("width", cellSize)
+           .attr("height", cellSize)
+           .attr("x", (d, i) => Math.floor((i + startOfYear) / 7) * (cellSize + 2)) // Week columns
+           .attr("y", (d, i) => ((i + startOfYear) % 7) * (cellSize + 2))           // Day rows (Sunday to Saturday)
+           .attr("fill", d => d <= currentDayOfYear ? "black" : "white")
+           .on("click", function(event, d) {
+                // Calculate the date of the clicked day
+                const date = new Date(year, 0, d);
+                const formattedDate = date.toDateString();
+
+                // Show the popover with the day and date information
+                popover.style("display", "block")
+                       .style("left", (event.pageX + 10) + "px")
+                       .style("top", (event.pageY - 10) + "px")
+                       .html(`<strong>Day ${d}</strong><br>${formattedDate}`);
+           });
+
+        // Hide the popover when clicking outside
+        d3.select("body").on("click", function(event) {
+            if (!event.target.classList.contains("day")) {
+                popover.style("display", "none");
+            }
+        });
+
+        // Function to check if the year is a leap year
+        function isLeapYear(year) {
+            return ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0);
+        }
+    </script>
+</body>
+</html>

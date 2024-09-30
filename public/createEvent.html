@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+</head>
+<body>
+    <h2>Create Event</h2>
+    <form id="createEventForm">
+        <input type="text" id="calendarName" placeholder="Calendar name" required>
+        <input type="text" id="eventTitle" placeholder="title" required>
+        <input type="text" id="eventDescription" placeholder="description" required>
+        <input type="date" id="eventDate" placeholder="Date" required>
+
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Delete Event</h2>
+    <form id="deleteEventForm">
+        <input type="text" id="deleteCalendarName" placeholder="Calendar name" required>
+        <input type="text" id="deleteEventId" placeholder="id" required>
+        <button type="submit">Delete</button>
+    </form>
+
+    <h2>Edit Event</h2>
+    <form id="editEventForm">
+        <input type="text" id="editCalendarName" placeholder="Calendar name" required>
+        <input type="text" id="editEventId" placeholder="Event Id" required>
+        <input type="text" id="editEventTitle" placeholder="title">
+        <input type="text" id="editEventDescription" placeholder="description">
+
+        <button type="submit">Edit</button>
+    </form>
+
+
+    <script>
+        document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const calendarName = document.getElementById('calendarName').value;
+            const eventTitle = document.getElementById('eventTitle').value;
+            const eventDescription = document.getElementById('eventDescription').value;
+            const eventDate = document.getElementById('eventDate').value;
+
+            // Construct the event object
+            const event = {
+                title: eventTitle,
+                description: eventDescription,
+                date: new Date(eventDate) // Assuming the date is in a valid date format
+            };
+
+            try {
+                 // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+
+                const response = await fetch('/api/createEvent', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cal_token}`,
+                    },
+                    body: JSON.stringify({ calendarName, event })
+                });
+                
+                // Handle the response
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An error occurred');
+                 }
+
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>
+<script>
+        document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const calendarName = document.getElementById('calendarName').value;
+            const eventTitle = document.getElementById('eventTitle').value;
+            const eventDescription = document.getElementById('eventDescription').value;
+            const eventDate = document.getElementById('eventDate').value;
+
+            // Construct the event object
+            const event = {
+                title: eventTitle,
+                description: eventDescription,
+                date: new Date(eventDate) // Assuming the date is in a valid date format
+            };
+
+            try {
+                 // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+
+                const response = await fetch('/api/createEvent', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cal_token}`,
+                    },
+                    body: JSON.stringify({ calendarName, event })
+                });
+                
+                // Handle the response
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An error occurred');
+                 }
+
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('deleteEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const calendarName = document.getElementById('deleteCalendarName').value;
+            const eventId = document.getElementById('deleteEventId').value;
+
+            try {
+                 // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+
+                const response = await fetch('/api/deleteEvent', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cal_token}`,
+                    },
+                    body: JSON.stringify({ calendarName, eventId })
+                });
+                
+                // Handle the response
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An error occurred');
+                 }
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>
+        <script>
+            document.getElementById('editEventForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const calendarName = document.getElementById('editCalendarName').value;
+                const eventId = document.getElementById('editEventId').value;
+                const eventTitle = document.getElementById('editEventTitle').value;
+                const eventDescription = document.getElementById('editEventDescription').value;
+
+                // Create the request body object and only add non-empty fields
+                const requestBody = {};
+                requestBody.calendarName = calendarName;
+                requestBody.eventId = eventId;
+                if (eventTitle) requestBody.eventTitle = eventTitle;
+                if (eventDescription) requestBody.eventDescription = eventDescription;
+
+                try {
+                     // Retrieve the token from localStorage
+                    const cal_token = localStorage.getItem('cal_token');
+                    if (!cal_token) {
+                        alert('No token found. Please log in.');
+                        return;
+                    }
+    
+                    const response = await fetch('/api/editEvent', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${cal_token}`,
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    
+                    // Handle the response
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.message || 'An error occurred');
+                     }
+                    const data = await response.json();
+                    alert(data.message);
+                } catch (error) {
+                    alert(error);
+                }
+            });
+        </script>
+  
+</body>
+</html>

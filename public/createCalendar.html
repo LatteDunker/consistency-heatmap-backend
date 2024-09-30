@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Signup</title>
+</head>
+<body>
+    <h2>New Calendar</h2>
+    <form id="calendarForm">
+        <input type="text" id="calendarName" placeholder="name" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <h2>Get Calendars</h2>
+    <form id="getCalendarsForm">
+        <button type="submit">Get</button>
+    </form>
+
+    <h2>Delete Calendars</h2>
+    <form id="deleteCalendarForm">
+        <input type="text" id="deleteCalendarName" placeholder="name" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <script>
+        document.getElementById('calendarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const calendarName = document.getElementById('calendarName').value;
+
+            try {
+                 // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+
+                const response = await fetch('/api/createCalendar', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cal_token}`,
+                    },
+                    body: JSON.stringify({ calendarName })
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An error occurred');
+                 }
+
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>
+   <script>
+        document.getElementById('getCalendarsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+
+                const response = await fetch('/api/getCalendars', {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${cal_token}`,
+                    }
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An error occurred');
+                }
+                const data = await response.json();
+                console.log(data)
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>  
+    <script>
+        document.getElementById('deleteCalendarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const deleteCalendarName = document.getElementById('deleteCalendarName').value;
+
+            try {
+                // Retrieve the token from localStorage
+                const cal_token = localStorage.getItem('cal_token');
+                if (!cal_token) {
+                    alert('No token found. Please log in.');
+                    return;
+                }
+                const response = await fetch('/api/deleteCalendar', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${cal_token}`
+                    },
+                    body: JSON.stringify({ deleteCalendarName })
+
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'An erro occurred');
+                }
+                const data = await response.json();
+                console.log(data)
+            } catch (error) {
+                alert(error);
+            }
+        });
+    </script>  
+</body>
+</html>

@@ -1,0 +1,23 @@
+Backend:
+    Accounts:
+        Account:
+            username
+            password
+            Calendars:
+                Calendar: Color-selection
+                Event: 
+                    Date, Strength, Description
+            OAuth login option
+            
+Frontend:
+    Landing page
+    Create new account / Login page
+    Account dashboard page
+
+   
+
+
+
+
+Later features:
+Day aggregator
